@@ -1,0 +1,118 @@
+body{  background: rgb(243,242,247);padding: 10px;box-sizing: border-box;}
+.content{
+    width: 763px;min-height: 469px;border:2px solid rgb(227,229,241) ; background: #fff;border-radius: 5px; padding: 20px;box-sizing: border-box;
+}
+table>thead>tr>th{background: rgb(227,229,241) !important;}
+.el-table .cu-row{ background: rgb(227,229,241) !important; }
+.opbtn{display: flex;}
+.el-button--primary{background-color: rgb(143,144,254); border-color: rgb(143,144,254);}
+.pagination{ margin-top: 30px; display: flex; justify-content:flex-end;}
+.condition{ width: 100%; height: 60px; border:2px solid rgb(227,229,241);box-sizing: border-box; margin-bottom: 20px;background: #fff; border-radius: 5px;
+    display: flex;align-items: center; padding: 0 20px; position: relative;
+}
+
+.refresh{ color: rgb(227,229,241);font-size: 24px; cursor: pointer; position: absolute;right: 12px;top: 50%;margin-top: -13px;}
+.reptile_data{ width: 100%; height: 469px;}
+#app{width:763px;height: 500px;}
+
+
+/* 规则部分 */
+.is_configuration_rules{
+    width: 763px;height: 469px; background: #fff; margin: 0 auto; border-radius: 5px;
+    border:2px solid rgb(227,229,241) ; padding: 0 20px;box-sizing: border-box;position: relative;
+}
+.rules_row{ display: flex;align-items: center;margin-top: 20px; justify-content: space-between;position: relative;padding: 0 20px;}
+.del_row{   
+    width: 20px;height: 20px;background-color: #f56c6c; border-color: #f56c6c;border-radius: 100%;
+    color: #fff;  font-size: 12px; position: absolute;
+    display: flex;align-items: center; justify-content: center;cursor: pointer;left: -8px;
+ }
+.rules_row_label{white-space: nowrap;font-size: 12px;margin-right: 10px;width: 80px;display: block;text-align: right;}
+.rules_row_item{display: flex;align-items: center;width: 100%;position: relative;}
+.mr10{margin-right: 10px;}
+.add_row{display: flex;justify-content: center;margin-top: 20px;}
+.op_btn{display: flex;align-items: center;justify-content: flex-end; position: absolute;bottom: 10px;right: 10px;}
+.table_config{height: 300px; overflow: auto;margin-top: 20px;}
+.rules_row_first-child{margin-top: 0; }
+.table_config>p{margin-block-start: 0 !important;
+    margin-block-end:0 !important;}
+.table_config::-webkit-scrollbar {
+  /*滚动条整体样式*/
+  width : 6px;  /*高宽分别对应横竖滚动条的尺寸*/
+  height: 1px;
+  }
+.table_config::-webkit-scrollbar-thumb {
+  /*滚动条里面小方块*/
+  border-radius   : 10px;
+  background-color: skyblue;
+  background-image: -webkit-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.2) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.2) 75%,
+      transparent 75%,
+      transparent
+  );
+  }
+.table_config::-webkit-scrollbar-track {
+  /*滚动条里面轨道*/
+  box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background   : #ededed;
+  border-radius: 10px;
+}
+/* 添加表格key效果 */
+.list-item { display: inline-block; margin-right: 10px;}
+.list-enter-active, .list-leave-active {  transition: all 0.6s;}
+.list-enter, .list-leave-to{ opacity: 0; transform: translateY(30px);}
+/* 配置文件和表格页面切换效果 */
+.slide-left-enter-active,
+.slide-left-leave-active {
+will-change: transform;
+transition: all 500ms;
+position: absolute; 
+}.slide-left-enter {
+opacity: 0;
+transform: translate3d(100%, 0, 0);
+}.slide-left-leave-active {
+opacity: 0;
+transform: translate3d(-100%, 0, 0);
+}
+.rule_list{
+    display: flex;align-items: center;
+    margin-left: 10px;
+}
+.cur_rule{font-size: 12px;margin-right:3px;}
+.rule_row{
+    display: flex;justify-content: center;align-items: center;position: relative;font-size: 12px;
+}
+.edit_rule{position: absolute;right: -10px;}
+
+/* json展示 */
+.json-item {
+    width: 100%;
+    height: 100%;
+}
+.string-box {
+    height: auto;
+    line-height: 20px;
+    overflow: hidden;
+    word-break: break-all;
+}
+.json-item>.number {
+    color: #2FA0ED;
+}
+.json-item>.string {
+    color: #F16222;
+}
+.json-item>.boolean {
+    color: #00C099;
+}
+.json-item>.null {
+    color: #CC33CC;
+}
+.json-item>.key {
+    color: red;
+}
+.json_data_show{ background: #fff;height: 453px;  overflow: auto;width:763px;}

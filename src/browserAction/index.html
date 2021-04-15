@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/browserAction/css/element.css">
+    <link rel="stylesheet" href="/browserAction/css/app.css">
+    <title>爬虫插件</title>
+</head>
+<body>
+    <div id="app">
+        <!-- 抓取到数据分析页面 -->
+        <div class="condition">
+            <div v-if="!is_configuration_ules && tableData.length">
+                <el-button type="danger" icon="el-icon-delete-solid"  size="mini" @click="delMore">批量删除</el-button>
+                <el-button type="primary" icon="el-icon-s-promotion" size="mini" @click="handleeExport">批量下载</el-button>
+            </div>
+            <el-button type="warning" style="margin-left:10px" icon="el-icon-s-tools" size="mini" @click=" is_configuration_ules = !is_configuration_ules">
+                {{ is_configuration_ules ?'取消':'添加规则' }}
+            </el-button>
+            <div class="rule_list">
+                <el-button type="success" class="cur_rule" size="mini">当前规则:</el-button>
+                <el-select v-model="start_rule" ref="rule_list_ref" :disabled="is_configuration_ules" @change="switchRule"  size="mini" placeholder="规则列表">
+                    <el-option v-for="item in rule_list" :key="item.value" :label="item.label"  :value="item.value">
+                        <div class="rule_row">
+                            <el-tooltip class="item" effect="dark" content="删除规则" placement="top-start">
+                                <i class="del_row el-icon-delete" @click.stop="delRuleRow(item)"></i>
+                            </el-tooltip>
+                            <span style="float: left">{{ item.label }}</span>
+                            <el-tooltip class="item" effect="dark" content="编辑规则" placement="top-start">
+                                <i class="edit_rule el-icon-edit-outline" @click.stop="editRule(item)"></i>
+                            </el-tooltip>
+                        </div>
+                    </el-option>
+                </el-select>
+            </div>
+            <el-tooltip v-if="!is_configuration_ules && tableData.length" class="item" effect="dark" content="JSON显示" placement="top-start">
+                <el-button type="info" style="margin-left:10px" size="mini" @click="switchDataShow">{{ isJosnShow === false?'JSON':'表格' }}</el-button>
+            </el-tooltip>
+            <el-tooltip class="item" effect="dark" content="刷新页面" placement="top-start">
+                <i class="refresh el-icon-refresh" @click="refreshPage"></i>
+            </el-tooltip>
+        </div>
+        <div class="reptile_data" element-loading-text="正在获取数据、如无法获取请尝试手动触发页面请求操作" v-loading="!is_configuration_ules && !tableData.length && !isJosnShow">
+            <transition name="slide-left">
+                <div class="content" v-if="!is_configuration_ules && tableData.length && !isJosnShow">
+                    <el-table
+                        :data="tableData"
+                        style="width: 763px"
+                        row-key="index"
+                        ref="ref_table"
+                        max-height="400"
+                        @selection-change="(data_list) => del_list = data_list"
+                        :row-class-name="tableRowClassName" >
+                        <el-table-column type="selection" show-overflow-tooltip width="55"> </el-table-column>
+                        <el-table-column
+                            v-for="({ prop,label } ,index) in tableConfig" :key="index" :prop="prop"
+                            :label="label" show-overflow-tooltip width="200" align="center">
+                        </el-table-column>
+                        <el-table-column label="操作" fixed="right" align="center" width="180">
+                            <template slot-scope="scope">
+                                <div class="opbtn">
+                                    <el-button type="primary" icon="el-icon-download"       size="mini"  @click="uploadRow(scope.$index,scope.row)">下载</el-button>
+                                    <el-button type="danger"  icon="el-icon-edit-outline"   size="mini"  @click="delleItem( scope.$index,true )">删除</el-button>
+                                </div>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    <!-- <div class="pagination">
+                        <el-pagination background layout="prev, pager, next" :total="1000"> </el-pagination>
+                    </div> -->
+                </div>
+            </transition>
+            <!-- json数据展示 -->
+            <transition name="slide-left">
+                <div class="json_data_show" v-if="!is_configuration_ules && tableData.length && isJosnShow">
+                    <pre class="json-item" v-html="jsonResultData" v-if="!isJsonString"></pre>
+                    <div class="json-item string-box" v-html="jsonResultData" v-else></div>
+                </div>
+            </transition>
+            <!-- 配置规则 -->
+            <transition name="slide-left">
+                <div class="is_configuration_rules" v-if="is_configuration_ules">
+                    <div class="rules_row">
+                        <div class="rules_row_item mr10">
+                            <span class="rules_row_label">拦截名称</span>
+                            <el-input size="mini" v-model="config.name" placeholder="当前这套规则的名称"></el-input>
+                        </div>
+                        <div class="rules_row_item ">
+                            <span class="rules_row_label">拦截接口URL</span>
+                            <el-input size="mini" v-model="config.url" placeholder="拦截的URL、如/getList"></el-input>
+                        </div>
+                    </div>
+                    <div class="rules_row">
+                        <div class="rules_row_item mr10">
+                            <span class="rules_row_label">接口展示字段</span>
+                            <el-input size="mini" v-model="config.params" placeholder="最好是数组对象结果"></el-input>
+                        </div>
+                        <div class="rules_row_item ">
+                            <span class="rules_row_label">待定</span>
+                            <!-- <el-input size="mini" v-model="config.url" placeholder="拦截的URL、如/getList"></el-input> -->
+                        </div>
+                    </div>
+                    <div class="table_config" ref="table_config">
+                        <transition-group name="list" tag="p">
+                            <div class="rules_row" 
+                                :class="{'rules_row_first-child':index === 0}" 
+                                v-for="(item ,index) in config.table_config" 
+                                :key="index + 1">
+                                <div class="rules_row_item mr10">
+                                    <div class="del_row el-icon-delete" @click="config.table_config.splice(index,1)"></div>
+                                    <span class="rules_row_label">表头{{index +1}}列</span>
+                                    <el-input size="mini" v-model="item.label" placeholder="每列所展示的表头名称"></el-input>
+                                </div>
+                                <div class="rules_row_item ">
+                                    <span class="rules_row_label">显示字段</span>
+                                    <el-input size="mini" v-model="item.prop" placeholder="接口参数展示的字段"></el-input>
+                                </div>
+                                <div class="rules_row_item">
+                                    <span class="rules_row_label">正则条件</span>
+                                    <el-input size="mini" v-model="item.Reg" placeholder="正则处理匹配最终的文字、不填默认"></el-input>
+                                </div>
+                            </div>
+                        </transition-group>
+                        <div class="add_row">
+                            <el-button type="primary" icon="el-icon-plus" size="mini" @click="addRow">添加表格展示列</el-button>
+                        </div>
+                    </div>
+                    
+                    <div class="op_btn">
+                        <el-button type="primary" size="mini" @click="submit">确认</el-button>
+                        <el-button type="info" size="mini" @click="is_configuration_ules = false">取消</el-button>
+                    </div>
+                </div>
+            </transition>
+        </div>
+    </div>
+</body>
+<script src="../plugin/vue.js"></script>
+<script src="../plugin/element.js"></script>
+<script src="../plugin/JsonExportExcel.min.js"></script>
+<script src="../browserAction/js/vm.js"></script>
+</html>
+
+
+

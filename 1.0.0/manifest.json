@@ -1,0 +1,45 @@
+{
+    "name": "reptile",
+    "description": "新美插件",
+    "version": "1.0",
+    "manifest_version": 2,
+    "permissions": [
+        "cookies",
+        "declarativeContent",
+        "activeTab",
+        "tabs",
+        "notifications",
+        "webRequest",
+        "<all_urls>"
+    ],
+    "content_scripts": [
+        {
+          "matches": ["*://*.huangguangfa.cn/*","*://*.m-test.51yxm.com/*","*://*.boka.vc/*","*://*.meikayun.com/*"],
+          "css": [],
+          "js": ["/core/contentScript/install.js"],
+          "run_at":"document_start"
+        }
+    ],
+    "background": {
+        "page": "/core/serve/index.html"
+    },
+    "browser_action": {
+        "default_icon": "/icons/logoh.png",
+        "default_title": "新美插件"
+   },
+    "omnibox": { "keyword" : "go" },
+    "web_accessible_resources": [
+        "/icons/logo.png",
+        "/core/contentScript/network.js"
+    ],
+    "externally_connectable": {
+        "matches": ["*://*.huangguangfa.cn/*","*://*.m-test.51yxm.com/*","*://*.boka.vc/*","*://*.meikayun.com/*"]
+    },
+    "icons": {
+        "16": "/icons/logo.png",
+        "32": "/icons/logo.png",
+        "48": "/icons/logo.png",
+        "128": "/icons/logo.png"
+    },
+    "content_security_policy": "style-src 'self' 'unsafe-inline';script-src 'self' 'unsafe-eval' https://cdn.bootcss.com; object-src 'self' ;"
+}
